@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Character2D : MonoBehaviour
 {
-    public enum Direction { Up, Right, Down, Left }
-
     private MeshRenderer mr = null;
 
     private readonly Vector2 texScale = new Vector2(0.5f, 0.5f);
@@ -23,7 +21,13 @@ public class Character2D : MonoBehaviour
 
     private void Start()
     {
-        SetDirection(Direction.Down);
+        SetDirection(EDirection.Down);
+    }
+
+    public void SetRamdomCharTexture()
+    {
+        Texture2D[] texList = Resources.LoadAll<Texture2D>("Textures\\Characters");
+        SetCharTexture(texList[Random.Range(0, texList.Length)]);
     }
 
     public void SetCharTexture(Texture2D _charTex)
@@ -31,21 +35,21 @@ public class Character2D : MonoBehaviour
         mr.material.mainTexture = _charTex;
     }
 
-    public void SetDirection(Direction _dir)
+    public void SetDirection(EDirection _dir)
     {
         mr.material.SetTextureScale("_MainTex", texScale);
 
-        if (_dir == Direction.Up) 
+        if (_dir == EDirection.Up) 
             mr.material.SetTextureOffset("_MainTex", texOffsetUp);
-        else if (_dir == Direction.Right)
+        else if (_dir == EDirection.Right)
         {
             // 오른쪽은 왼쪽 이미지를 뒤집은 것이기 때문에 따로 처리
             mr.material.SetTextureScale("_MainTex", texScaleFlipX);
             mr.material.SetTextureOffset("_MainTex", texOffsetRight);
         }
-        else if (_dir == Direction.Down)
+        else if (_dir == EDirection.Down)
             mr.material.SetTextureOffset("_MainTex", texOffsetDown);
-        else if (_dir == Direction.Left)
+        else if (_dir == EDirection.Left)
             mr.material.SetTextureOffset("_MainTex", texOffsetLeft);
     }
 }

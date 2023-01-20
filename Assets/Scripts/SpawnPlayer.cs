@@ -20,13 +20,6 @@ public class SpawnPlayer : MonoBehaviour
             transform.position + new Vector3(0f, 0.1f, 0f),
             Quaternion.identity,
             0);
-        //playerGo.transform.SetParent(transform, false);
-
         playerGo.GetComponent<PlayerController>().Init(team);
-
-        // Single
-        //playerGo = Instantiate(playerPrefab);
-        //playerGo.transform.SetParent(transform, false);
-        //playerGo.transform.localPosition = new Vector3(0f, 0.1f, 0f);
     }
 }

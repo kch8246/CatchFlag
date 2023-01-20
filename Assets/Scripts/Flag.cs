@@ -6,10 +6,11 @@ public class Flag : MonoBehaviour
 {
     private SphereCollider sphereCollider = null;
     private Transform attachTr = null;
-
-    private Vector3 offset = new Vector3(0f, 0f, 0.5f);
-
     private Jump jump = null;
+
+    private readonly Vector3 offset = new Vector3(0f, 0f, 0.5f);
+    private readonly float rotateSpeed = 5f;
+    private readonly float rotateAngleLimit = 30f;
 
     private int ownerActorNum = -1;
     public int OwnerActorNum { get { return ownerActorNum; } }
@@ -45,8 +46,9 @@ public class Flag : MonoBehaviour
 
     private void Update()
     {
-        if (attachTr == null) return;
+        transform.rotation = Quaternion.AngleAxis(Mathf.Sin(Time.time * rotateSpeed) * rotateAngleLimit, Vector3.up);
 
-        transform.position = attachTr.position + offset;
+        if (attachTr != null)
+            transform.position = attachTr.position + offset;
     }
 }

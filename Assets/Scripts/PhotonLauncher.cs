@@ -38,6 +38,8 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
         {
             //Debug.Log("NickName is empty");
             //return;
+
+            // 닉네임을 입력하지 않았다면 랜덤번호 할당
             nickName = Random.Range(1, 100).ToString();
         }
 
