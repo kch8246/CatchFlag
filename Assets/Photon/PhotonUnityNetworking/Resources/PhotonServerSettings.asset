@@ -40,6 +40,19 @@ MonoBehaviour:
   - RespawnSpaceship
   - FlagCatch
   - FlagDrop
+  - UpdateScoreRPC
+  - FlagCatchRPC
+  - FlagDropRPC
+  - RespawnRPC
+  - StartTimer
+  - SetGameState
+  - SetPressedCallback
+  - SetActiveRPC
+  - SetPlayButtonVisibleRPC
+  - AddScore
+  - AddScoreRPC
+  - SetGameStateRPC
+  - StartTimerRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

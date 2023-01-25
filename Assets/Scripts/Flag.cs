@@ -21,6 +21,20 @@ public class Flag : MonoBehaviour
         jump = GetComponent<Jump>();
     }
 
+    public void Respawn(Vector3 _spawnPos)
+    {
+        attachTr = null;
+        ownerActorNum = -1;
+        sphereCollider.enabled = true;
+
+        transform.position = _spawnPos;
+    }
+
+    public bool IsAttach()
+    {
+        return attachTr != null;
+    }
+
     public void Attach(Transform _attachTr, int _ownerActorNum)
     {
         attachTr = _attachTr;

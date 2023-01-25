@@ -12,10 +12,14 @@ public class PlayerController : MonoBehaviourPun
 
     private readonly float moveSpeed = 250f;
     private readonly float maxSpeed = 5f;       // 속도의 길이
-    private readonly float friction = 0.97f;    // 감속 정도(낮을수록 빠르게 감속)
+    private readonly float friction = 0.97f;    // 감속정도(낮을수록 빠르게 감속)
 
     private ETeam team = ETeam.Red;
     public ETeam Team { get { return team; } }
+
+    private VoidTeamDelegate goalCallback = null;
+
+    public EGameState gameState = EGameState.Ready;
 
     private void Awake()
     {
@@ -37,6 +41,7 @@ public class PlayerController : MonoBehaviourPun
 
     private void Update()
     {
+        if (gameState == EGameState.Ready || gameState == EGameState.TimeOver) return;
         if (!photonView.IsMine) return;
 
 
@@ -91,7 +96,7 @@ public class PlayerController : MonoBehaviourPun
         {
             // 깃발을 소유하고 있는 액터와 현재 조작중인 액터가 같은지 검사
             if (photonView.Owner.ActorNumber == flag.OwnerActorNum)
-                photonView.RPC("FlagDrop", RpcTarget.All);
+                photonView.RPC("FlagDropRPC", RpcTarget.All);
         }
 
 #if UNITY_EDITOR
@@ -99,9 +104,10 @@ public class PlayerController : MonoBehaviourPun
 #endif
     }
 
-    public void Init(ETeam _team)
+    public void Init(ETeam _team, VoidTeamDelegate _goalCallback)
     {
         team = _team;
+        goalCallback = _goalCallback;
     }
 
     private void OnCollisionEnter(Collision _other)
@@ -112,18 +118,33 @@ public class PlayerController : MonoBehaviourPun
         // Drop Flag
         if (_other.gameObject.CompareTag("Player"))
         {
-            photonView.RPC("FlagDrop", RpcTarget.All);
+            photonView.RPC("FlagDropRPC", RpcTarget.All);
             return;
         }        
     }
 
     private void OnTriggerEnter(Collider _other)
     {
+        if (!photonView.IsMine) return;
+
+
         // Catch Flag
         if (_other.gameObject.CompareTag("Flag"))
         {
-            photonView.RPC("FlagCatch", RpcTarget.All, photonView.Owner.ActorNumber);
+            photonView.RPC("FlagCatchRPC", RpcTarget.All, photonView.Owner.ActorNumber);
             return;
+        }
+
+        if (_other.gameObject.CompareTag("Goal"))
+        {
+            Goal goal = _other.GetComponent<Goal>();
+            // 골에 지정된 팀과 나의 팀이 같고,
+            // 깃발을 들고 있다면 골 인정
+            if (goal.Team == team && flag.IsAttach())
+            {
+                goalCallback?.Invoke(team);
+                return;
+            }
         }
     }
 
@@ -133,14 +154,14 @@ public class PlayerController : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void FlagCatch(int _actorNum)
+    public void FlagCatchRPC(int _actorNum)
     {
         PhotonView pv = GetPhotonViewWithActorNumber(_actorNum);
         flag.Attach(pv.transform, pv.Owner.ActorNumber);
     }
 
     [PunRPC]
-    public void FlagDrop()
+    public void FlagDropRPC()
     {
         flag.Detach();
     }
@@ -161,5 +182,10 @@ public class PlayerController : MonoBehaviourPun
         }
 
         return null;
+    }
+
+    public void SetGameState(EGameState _gameState)
+    {
+        gameState = _gameState;
     }
 }

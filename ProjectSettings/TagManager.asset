@@ -9,9 +9,8 @@ TagManager:
   - Wall_D
   - Wall_L
   - Flag
-  - GoalRed
-  - GoalBlue
   - Obstacle
+  - Goal
   layers:
   - Default
   - TransparentFX

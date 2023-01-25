@@ -1,15 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class SpawnFlag : MonoBehaviour
+public class SpawnFlag : MonoBehaviourPun
 {
-    [SerializeField] private GameObject flagGo = null;
+    [SerializeField] private Flag flag = null;
 
     public void Respawn()
     {
-        if (flagGo == null) return;
+        photonView.RPC("RespawnRPC", RpcTarget.All);
+    }
 
-        flagGo.transform.position = transform.position;
+    [PunRPC]
+    public void RespawnRPC()
+    {
+        if (flag == null) return;
+
+        flag.Respawn(transform.position);
     }
 }

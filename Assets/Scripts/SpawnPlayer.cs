@@ -11,15 +11,24 @@ public class SpawnPlayer : MonoBehaviour
 
     private GameObject playerGo = null;
 
-    public void Spawn()
+    public PlayerController Spawn(VoidTeamDelegate _goalCallback)
     {
-        if (playerPrefab == null) return;
+        if (playerPrefab == null) return null;
 
         playerGo = PhotonNetwork.Instantiate(
             "Prefabs\\" + playerPrefab.name,
             transform.position + new Vector3(0f, 0.1f, 0f),
             Quaternion.identity,
             0);
-        playerGo.GetComponent<PlayerController>().Init(team);
+        playerGo.GetComponent<PlayerController>().Init(team, _goalCallback);
+
+        return playerGo.GetComponent<PlayerController>();
     }
+
+    //public void SetGameState(EGameState _gameState)
+    //{
+    //    if (playerGo == null) return;
+
+    //    playerGo.GetComponent<PlayerController>().SetGameState(_gameState);
+    //}
 }

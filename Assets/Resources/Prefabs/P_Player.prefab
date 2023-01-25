@@ -307,7 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eec9d8b325b06e4d854141aaadde4df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flagAttachPointTr: {fileID: 6307405647085607221}
+  gameState: 0
 --- !u!114 &6922259627565147826
 MonoBehaviour:
   m_ObjectHideFlags: 0
