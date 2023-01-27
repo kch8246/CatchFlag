@@ -41,10 +41,13 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
         {
             // 닉네임을 입력하지 않았다면 랜덤번호 할당
             nickName = Random.Range(1, 1000).ToString("D4");
+            SetNickName();
         }
 
         if (PhotonNetwork.IsConnected)
         {
+            Debug.LogError("Connected");
+
             PhotonNetwork.JoinRandomRoom();
         }
     }
@@ -55,6 +58,11 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
         nickName = _nickName;
 
         // 유저 이름 지정
+        SetNickName();
+    }
+
+    private void SetNickName()
+    {
         PhotonNetwork.NickName = nickName;
     }
 
@@ -65,11 +73,15 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        Debug.LogError("Joined Room");
+
         SceneManager.LoadScene("PlayScene");
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
+        Debug.LogError("Joined Room Failed");
+
         connectButton.interactable = true;
 
         PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlyaerPerRoom });

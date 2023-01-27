@@ -53,6 +53,17 @@ MonoBehaviour:
   - AddScoreRPC
   - SetGameStateRPC
   - StartTimerRPC
+  - InitPlayerInfo
+  - UpdateHp
+  - InitRPC
+  - SpawnOnNetwork
+  - SpawnPlayerRPC
+  - RespawnFlagRPC
+  - SyncNickNameRPC
+  - SyncInfoRPC
+  - ApplyPlayerInfoRPC
+  - UpdateHpRPC
+  - SetCharDirectionRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

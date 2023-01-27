@@ -9,9 +9,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     [Header("-- Spawn Point --")]
-    [SerializeField] private SpawnPlayer spawnPtRed = null;
-    [SerializeField] private SpawnPlayer spawnPtBlue = null;
-    [SerializeField] private SpawnFlag spawnPtFlag = null;
+    [SerializeField] private Spawner spawner = null;
 
     [Header("-- Score --")]
     [SerializeField] private UIScore uiScore = null;
@@ -31,18 +29,33 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private GameObject masterTextGo = null;
 
-    private EGameState gameState = EGameState.Ready;
-    private PlayerController myPlayerCtrl = null;
+    private static EGameState gameState = EGameState.Ready;
+    public static EGameState GameState { get { return gameState; } }
 
     private void Start()
     {
-        Debug.Log(PhotonNetwork.IsConnected);
+        // 팀 정하기
+        ETeam team = ETeam.Red;
+        if (PhotonNetwork.CurrentRoom.PlayerCount != 1) team = ETeam.Blue;
 
-        if (PhotonNetwork.CurrentRoom.PlayerCount == 1) myPlayerCtrl = spawnPtRed.Spawn(GoalCallback);
-        else myPlayerCtrl = spawnPtBlue.Spawn(GoalCallback);
+        // 이미지 정하기
+        Texture2D[] texList = Resources.LoadAll<Texture2D>("Textures\\Characters");
+        Texture2D tex = texList[Random.Range(0, texList.Length)];
 
+        // 커스텀프로퍼티에 저장해두면 다른 곳에서도 사용가능(현재는 사용안함)
+        //ExitGames.Client.Photon.Hashtable hash =
+        //    new ExitGames.Client.Photon.Hashtable()
+        //    {
+        //        ["Team"] = team,
+        //        ["Tex"] = tex.name
+        //    };
+        //PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+
+        spawner.SpawnPlayer(team, tex.name, GoalCallback);
+
+        // 깃발은 마스터만 세팅(처음에만)
         if (PhotonNetwork.IsMasterClient)
-            spawnPtFlag.Respawn();
+            spawner.RespawnFlag();
 
         playButton.SetVisible(true);
         playButton.SetPressedCallback(OnPlayPressed);
@@ -52,6 +65,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient) masterTextGo.SetActive(true);
         else masterTextGo.SetActive(false);
+
+#if UNITY_EDITOR
+        // TEST TEST TEST
+        if (PhotonNetwork.IsMasterClient) playButton.SetTextPlay();
+#endif
     }
 
     // 플레이어가 입장할 때 호출되는 함수
@@ -70,8 +88,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         //Debug.Log("Goal!: " + _team);
 
-        photonView.RPC("AddScoreRPC", RpcTarget.MasterClient, _team);
-        spawnPtFlag.Respawn();
+        photonView.RPC(nameof(AddScoreRPC), RpcTarget.MasterClient, _team);
+        spawner.RespawnFlag();
     }
 
     [PunRPC]
@@ -91,7 +109,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         gameState = _gameState;
 
-        myPlayerCtrl.SetGameState(gameState);
+        //myPlayerCtrl.SetGameState(gameState);
     }
 
     [PunRPC]
@@ -106,7 +124,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void TimeOver()
     {
         //Debug.Log("Time Over");
-        photonView.RPC("SetGameStateRPC", RpcTarget.All, EGameState.TimeOver);
+        photonView.RPC(nameof(SetGameStateRPC), RpcTarget.All, EGameState.TimeOver);
 
         timeOver.SetVisible(true);
     }
@@ -138,10 +156,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     // 플레이 버튼 눌러졌을 때
     public void OnPlayPressed()
     {
-        photonView.RPC("SetPlayButtonVisibleRPC", RpcTarget.All, false);
+        photonView.RPC(nameof(SetPlayButtonVisibleRPC), RpcTarget.All, false);
 
-        photonView.RPC("SetGameStateRPC", RpcTarget.All, EGameState.Play);
-        photonView.RPC("StartTimerRPC", RpcTarget.All, 60f);
+        photonView.RPC(nameof(SetGameStateRPC), RpcTarget.All, EGameState.Play);
+        photonView.RPC(nameof(StartTimerRPC), RpcTarget.All, 60f);
     }
 
     [PunRPC]

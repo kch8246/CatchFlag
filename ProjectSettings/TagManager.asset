@@ -11,6 +11,7 @@ TagManager:
   - Flag
   - Obstacle
   - Goal
+  - Canvas
   layers:
   - Default
   - TransparentFX

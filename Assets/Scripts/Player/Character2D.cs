@@ -24,15 +24,20 @@ public class Character2D : MonoBehaviour
         SetDirection(EDirection.Down);
     }
 
-    public void SetRamdomCharTexture()
-    {
-        Texture2D[] texList = Resources.LoadAll<Texture2D>("Textures\\Characters");
-        SetCharTexture(texList[Random.Range(0, texList.Length)]);
-    }
+    //public void SetRamdomCharTexture()
+    //{
+    //    Texture2D[] texList = Resources.LoadAll<Texture2D>("Textures\\Characters");
+    //    SetCharTexture(texList[Random.Range(0, texList.Length)]);
+    //}
 
-    public void SetCharTexture(Texture2D _charTex)
+    //public void SetCharTexture(Texture2D _charTex)
+    //{
+    //    mr.material.mainTexture = _charTex;
+    //}
+
+    public void SetCharTexture(string _charTexName)
     {
-        mr.material.mainTexture = _charTex;
+        mr.material.mainTexture = Resources.Load<Texture2D>("Textures\\Characters\\" + _charTexName);
     }
 
     public void SetDirection(EDirection _dir)
